@@ -10,15 +10,17 @@ DQN and PPO training loops.
     Reward = marginal increase in branch coverage, minus penalties for
              timeout / solver overhead / state explosion (see
              configs/config.yaml: reinforcement_learning.reward).
-
-Planned public interface:
-
-    class SymbolicExecutionEnv(gym.Env): ...
-    class DQNAgent: ...
-    class PPOAgent: ...
-    def train(agent_cls, env, config) -> TrainedAgent: ...
-
-RQ3 (does RL improve over static ML ranking?) is answered by comparing this
-module's trained-policy coverage against the Phase-4 static ranker's
-coverage, both against the Phase-2 baseline heuristics, in `evaluation/`.
 """
+
+from reinforcement_learning.env import SymbolicExecutionEnv
+from reinforcement_learning.dqn import DQNAgent
+from reinforcement_learning.ppo import PPOAgent
+from reinforcement_learning.trainer import RLTrainer
+
+__all__ = [
+    "SymbolicExecutionEnv",
+    "DQNAgent",
+    "PPOAgent",
+    "RLTrainer",
+]
+
