@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Results & generated data (keep structure via .gitkeep, not the data itself)
+results/*
+!results/.gitkeep
+dataset/*/*
+!dataset/*/.gitkeep
+experiments/*
+!experiments/.gitkeep
+
+# LLM cache
+results/llm_cache/
+
+# KLEE build artifacts
+*.bc
+*.ll
+klee-out-*/
+klee-last
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

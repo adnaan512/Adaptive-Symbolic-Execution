@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  klee-env:
+    build:
+      context: ..
+      dockerfile: Docker/Dockerfile.klee
+    image: adaptive-sym-exec/klee-env:latest
+    volumes:
+      - ../dataset:/workspace/dataset
+      - ../results:/workspace/results
+
+  backend:
+    build:
+      context: ..
+      dockerfile: Docker/Dockerfile.backend
+    image: adaptive-sym-exec/backend:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ..:/app
+    depends_on:
+      - klee-env
+    environment:
+      - CONFIG_PATH=/app/configs/config.yaml
+
+  frontend:
+    image: node:20-slim
+    working_dir: /app/frontend
+    volumes:
+      - ../frontend:/app/frontend
+    ports:
+      - "3000:3000"
+    command: ["sh", "-c", "npm install && npm run dev"]

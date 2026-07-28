@@ -1,0 +1,110 @@
+# Central configuration for the Adaptive-Symbolic-Execution pipeline.
+# Every module (feature_extractor, llm, models, reinforcement_learning,
+# evaluation, visualization) reads this file through
+# backend.core.config.load_config() rather than hardcoding values.
+
+project:
+  name: "adaptive-symbolic-execution"
+  version: "0.1.0-phase1"
+  seed: 42
+
+paths:
+  dataset_dir: "dataset"
+  results_dir: "results"
+  experiments_dir: "experiments"
+  models_dir: "models"
+  logs_dir: "results/logs"
+
+klee:
+  binary: "klee"
+  bitcode_compile_flags: ["-emit-llvm", "-c", "-g", "-O0", "-Xclang", "-disable-O0-optnone"]
+  max_time_seconds: 3600
+  max_memory_mb: 4096
+  search_heuristics_baselines:
+    - dfs
+    - bfs
+    - random-state
+    - random-path
+    - nurs:covnew
+    - nurs:md2u
+    - cov-opt
+
+features:
+  # Canonical ordered list of the 14 execution-state features.
+  # Downstream models must treat this list as the schema — do not reorder
+  # without bumping project.version and re-training saved models.
+  names:
+    - execution_depth
+    - num_path_constraints
+    - constraint_complexity
+    - num_symbolic_variables
+    - solver_time_ms
+    - instruction_count
+    - branch_count
+    - loop_depth
+    - distance_to_uncovered_branch
+    - current_branch_coverage
+    - memory_object_count
+    - num_forks
+    - state_age
+    - path_length
+
+llm:
+  provider: "local"            # local | anthropic | openai (see llm/README.md)
+  model_name: "codellama-13b-instruct"
+  temperature: 0.0
+  max_tokens: 400
+  cache_dir: "results/llm_cache"
+  response_schema:
+    branch: "int"
+    confidence: "float"
+    reason: "str"
+
+ml_ranking:
+  models:
+    - random_forest
+    - xgboost
+    - lightgbm
+    - neural_net
+  neural_net:
+    hidden_sizes: [128, 64, 32]
+    dropout: 0.1
+    lr: 0.001
+    epochs: 50
+  cross_validation:
+    folds: 5
+
+reinforcement_learning:
+  algorithm: "dqn"          # dqn | ppo
+  gamma: 0.99
+  learning_rate: 0.0003
+  replay_buffer_size: 100000
+  batch_size: 64
+  target_update_interval: 1000
+  reward:
+    coverage_gain_weight: 1.0
+    timeout_penalty: -1.0
+    solver_overhead_penalty_scale: -0.01
+    state_explosion_penalty: -0.5
+  training:
+    total_timesteps: 1000000
+    eval_interval: 10000
+
+evaluation:
+  metrics:
+    - branch_coverage
+    - instruction_coverage
+    - unique_paths
+    - unique_bugs
+    - solver_calls
+    - execution_time_seconds
+    - memory_usage_mb
+    - state_explosion_count
+    - avg_solver_time_ms
+  significance_test: "mannwhitneyu"
+  alpha: 0.05
+  num_repetitions: 10
+
+dashboard:
+  backend_port: 8000
+  frontend_port: 3000
