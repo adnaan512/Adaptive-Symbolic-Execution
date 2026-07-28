@@ -80,6 +80,12 @@ The framework mathematically tests the following Research Questions (RQs):
 
 The pipeline automatically calculates the **Mann-Whitney U** test for statistical significance (p < 0.05).
 
+### Branch Coverage Velocity
+
+![Coverage Over Time](paper/figures/coverage_plot.png)
+
+*Figure: The AI-guided meta-heuristic achieves faster code coverage convergence compared to traditional DFS/BFS search strategies across the evaluation benchmark.*
+
 ---
 
 ## 📂 Repository Layout

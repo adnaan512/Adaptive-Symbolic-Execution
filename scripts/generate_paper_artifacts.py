@@ -134,10 +134,12 @@ def generate_pdf_figures():
     
     plt.tight_layout()
     
-    # Save as PDF
-    out_path = FIGURES_DIR / "coverage_plot.pdf"
-    plt.savefig(out_path, format="pdf", dpi=300, bbox_inches="tight")
-    logger.info(f"Generated PDF figure: {out_path}")
+    # Save as PDF for papers, PNG for README
+    out_path_pdf = FIGURES_DIR / "coverage_plot.pdf"
+    out_path_png = FIGURES_DIR / "coverage_plot.png"
+    plt.savefig(out_path_pdf, format="pdf", dpi=300, bbox_inches="tight")
+    plt.savefig(out_path_png, format="png", dpi=300, bbox_inches="tight")
+    logger.info(f"Generated PDF/PNG figures in {FIGURES_DIR}")
 
 
 def main():
