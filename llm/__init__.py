@@ -20,3 +20,11 @@ Design notes:
   unavailable, since RQ2 explicitly studies how much the LLM signal helps
   (an ablation needs a "no-LLM" arm).
 """
+
+from llm.exceptions import LLMError, LLMConnectionError, LLMResponseParseError
+
+__all__ = [
+    "LLMError",
+    "LLMConnectionError",
+    "LLMResponseParseError",
+]
