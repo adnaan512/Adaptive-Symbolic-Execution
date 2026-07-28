@@ -9,6 +9,12 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from dashboard.components.charts import (
+    render_coverage_over_time,
+    render_heuristic_comparison,
+    render_live_execution_tree_mock
+)
+
 # Configure the page layout
 st.set_page_config(
     page_title="Adaptive SE Dashboard",
@@ -68,7 +74,15 @@ def main():
         st.dataframe(sig_df, use_container_width=True)
         
     st.markdown("---")
-    st.markdown("*(Detailed charts will be added in the next commit via modular components.)*")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        render_coverage_over_time(raw_data)
+    with col2:
+        render_heuristic_comparison(metrics_df)
+        
+    st.markdown("---")
+    render_live_execution_tree_mock()
 
 if __name__ == "__main__":
     main()
