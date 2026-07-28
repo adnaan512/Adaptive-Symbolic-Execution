@@ -21,3 +21,13 @@ completion under each baseline heuristic and labeling states by whether
 choosing them led to a subsequent coverage gain within a short horizon —
 see `docs/design/label_construction.md` (added in Phase 4).
 """
+
+from models.ml.base import RankingModel
+from models.ml.tree_models import RandomForestRanker, XGBoostRanker, LightGBMRanker
+
+__all__ = [
+    "RankingModel",
+    "RandomForestRanker",
+    "XGBoostRanker",
+    "LightGBMRanker",
+]
