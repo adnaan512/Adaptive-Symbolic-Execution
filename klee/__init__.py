@@ -1,23 +1,78 @@
 """
-klee — Phase 2.
+klee — Phase 2 (implemented).
 
-Responsibility: compile C sources to LLVM bitcode, run KLEE under a given
-search heuristic (or the AI-guided searcher, once it exists), and parse
-KLEE's `.klee-stats`, `run.stats`, and per-state ktest/log output into the
-raw dicts that `feature_extractor.extract_features` consumes.
+Public API
+----------
+Compilation
+    compile_to_bitcode   Compile a C source file → LLVM bitcode via clang.
 
-Planned public interface:
+Running KLEE
+    run_klee             Launch KLEE non-blocking; returns KleeRunHandle.
+    run_klee_blocking    Launch KLEE and wait for completion.
+    KleeRunHandle        Handle to a live/completed KLEE process.
 
-    def compile_to_bitcode(c_source: Path, flags: list[str]) -> Path
-    def run_klee(bitcode: Path, heuristic: SearchHeuristic, timeout_s: int) -> KleeRunHandle
-    def parse_run_stats(run_dir: Path) -> list[dict]   # -> feature_extractor
-    def stream_coverage(run_dir: Path) -> Iterator[CoverageSnapshot]
+Parsing output
+    parse_run_stats      Read all rows from run.stats (SQLite) → list[dict].
+    stream_coverage      Yield CoverageSnapshot objects from run.stats.
+    build_run_result     Assemble a RunResult from a completed KLEE run dir.
+    save_run_result_json Serialise a RunResult to JSON.
+    parse_messages       Read messages.txt.
+    parse_warnings       Read warnings.txt.
+    count_ktest_files    Count unique paths (.ktest files).
+    count_error_files    Count unique bugs (.err files).
 
-For the AI-guided searcher specifically, Phase 6 will need KLEE's
-`--search=random-path` mode combined with an external state-selection hook;
-if KLEE's C++ side doesn't expose a clean per-step hook in the pinned
-version, the fallback design is to run KLEE with `-only-output-states-covering-new`
-and periodically checkpoint+fork via KLEE's `ktest` replay to approximate
-external control. This tradeoff is documented in `docs/design/klee_hook.md`
-once Phase 2 confirms which approach the installed KLEE version supports.
+Orchestration
+    orchestrate_run      End-to-end: C source → compile → KLEE → parse → RunResult.
+
+Exceptions
+    KleeError            Base exception.
+    KleeCompilationError clang compilation failure.
+    KleeRuntimeError     KLEE process failure.
+    KleeParseError       Output directory parsing failure.
+
+Notes
+-----
+AI_GUIDED heuristic (Phase 6): currently falls back to random-path as a
+placeholder. The real hook design is documented in docs/design/klee_hook.md
+(added in Phase 6 once KLEE version capabilities are confirmed).
 """
+
+from klee.compiler import compile_to_bitcode
+from klee.exceptions import KleeCompilationError, KleeError, KleeParseError, KleeRuntimeError
+from klee.parser import (
+    build_run_result,
+    count_error_files,
+    count_ktest_files,
+    parse_messages,
+    parse_run_stats,
+    parse_warnings,
+    save_run_result_json,
+    stream_coverage,
+)
+from klee.run_klee import orchestrate_run
+from klee.runner import KleeRunHandle, run_klee, run_klee_blocking
+
+__all__ = [
+    # compilation
+    "compile_to_bitcode",
+    # running
+    "run_klee",
+    "run_klee_blocking",
+    "KleeRunHandle",
+    # parsing
+    "parse_run_stats",
+    "stream_coverage",
+    "build_run_result",
+    "save_run_result_json",
+    "parse_messages",
+    "parse_warnings",
+    "count_ktest_files",
+    "count_error_files",
+    # orchestration
+    "orchestrate_run",
+    # exceptions
+    "KleeError",
+    "KleeCompilationError",
+    "KleeRuntimeError",
+    "KleeParseError",
+]

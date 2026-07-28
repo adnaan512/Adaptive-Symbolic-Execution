@@ -2,7 +2,8 @@
 Structured logging setup shared by every module.
 
 Usage:
-    from backend.core.logging import get_logger
+    from backend.core.logging import get_logger, setup_logging
+    setup_logging(level="DEBUG")          # call once in CLI entry points
     log = get_logger(__name__)
     log.info("extracted features", extra={"state_id": state_id, "n": 14})
 """
@@ -17,7 +18,7 @@ from pathlib import Path
 _CONFIGURED = False
 
 
-def _configure_root_logger(logs_dir: str = "results/logs") -> None:
+def _configure_root_logger(level: int = logging.INFO, logs_dir: str = "results/logs") -> None:
     global _CONFIGURED
     if _CONFIGURED:
         return
@@ -29,7 +30,7 @@ def _configure_root_logger(logs_dir: str = "results/logs") -> None:
     formatter = logging.Formatter(fmt)
 
     root = logging.getLogger()
-    root.setLevel(logging.INFO)
+    root.setLevel(level)
 
     stream_handler = logging.StreamHandler(sys.stdout)
     stream_handler.setFormatter(formatter)
@@ -40,6 +41,23 @@ def _configure_root_logger(logs_dir: str = "results/logs") -> None:
     root.addHandler(file_handler)
 
     _CONFIGURED = True
+
+
+def setup_logging(level: str | int = "INFO", logs_dir: str = "results/logs") -> None:
+    """Configure root logger.  Call once from CLI entry points.
+
+    Parameters
+    ----------
+    level:
+        Log level as a string (``"DEBUG"``, ``"INFO"``, ``"WARNING"``,
+        ``"ERROR"``) or an integer constant from the ``logging`` module.
+    logs_dir:
+        Directory for the ``pipeline.log`` file.
+    """
+    global _CONFIGURED
+    _CONFIGURED = False  # allow re-configuration with a different level
+    numeric_level = logging.getLevelName(level) if isinstance(level, str) else level
+    _configure_root_logger(level=numeric_level, logs_dir=logs_dir)
 
 
 def get_logger(name: str) -> logging.Logger:
