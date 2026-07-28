@@ -17,8 +17,11 @@ paper-report generator (Phase 9) can consume directly (CSV + LaTeX booktabs).
 """
 
 from evaluation.runner import run_benchmark_suite
+from evaluation.metrics import compute_metrics_table, significance_tests
 
 __all__ = [
     "run_benchmark_suite",
+    "compute_metrics_table",
+    "significance_tests",
 ]
 
