@@ -17,11 +17,21 @@ synthetic dict fixtures without a KLEE installation.
 """
 
 from feature_extractor.extractor import extract_features, extract_batch
+from feature_extractor.dataset import (
+    save_dataset_csv,
+    load_dataset_csv,
+    save_dataset_jsonl,
+    load_dataset_jsonl,
+)
 from feature_extractor.exceptions import FeatureExtractionError, ValidationError
 
 __all__ = [
     "extract_features",
     "extract_batch",
+    "save_dataset_csv",
+    "load_dataset_csv",
+    "save_dataset_jsonl",
+    "load_dataset_jsonl",
     "FeatureExtractionError",
     "ValidationError",
 ]
