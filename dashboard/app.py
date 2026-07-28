@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from dashboard.components.charts import (
+from components.charts import (
     render_coverage_over_time,
     render_heuristic_comparison,
     render_live_execution_tree_mock
