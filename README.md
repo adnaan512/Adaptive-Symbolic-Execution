@@ -1,38 +1,239 @@
-# Adaptive LLM-Guided Symbolic Execution
+# Adaptive Symbolic Execution
+### AI-Guided Search Heuristics for Symbolic Execution using Machine Learning, Large Language Models, and Reinforcement Learning
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![KLEE](https://img.shields.io/badge/KLEE-Symbolic_Execution-green)](https://klee.github.io/)
-
-> **A cutting-edge research framework for maximizing branch coverage in Symbolic Execution using Large Language Models (LLMs), Reinforcement Learning (RL), and traditional Machine Learning.**
-
-Traditional symbolic execution engines (like KLEE) rely on static search heuristics (DFS, BFS, Random). This project introduces an adaptive, AI-guided meta-heuristic that dynamically learns which execution paths to explore next, prioritizing those most likely to yield new coverage or discover unique crashes.
-
-This framework is built as a complete End-to-End Pipeline, ready for publication at top-tier software engineering conferences (ICSE, FSE, ASE, ISSTA).
-
----
-
-## Project Phases & Architecture
-
-This repository is modularly structured across 9 distinct phases:
-
-1. **GitHub Repository & Structure**: Foundational directory layout (`backend/`, `models/`, `evaluation/`).
-2. **KLEE Integration Harness**: Interacts with the KLEE C++ engine, orchestrating `.bc` (LLVM bitcode) files and generating execution traces.
-3. **Execution State Feature Extraction**: Extracts robust AST, Call Graph, and execution metrics into strongly-typed Pydantic schemas.
-4. **Machine Learning Ranking Models**: Offline XGBoost/RandomForest models that predict the coverage utility of a given state.
-5. **LLM Prompt Strategy Module**: Zero-shot and Few-shot prompting mechanisms to ask GPT/Claude to semantically predict branch viability.
-6. **Reinforcement Learning Agent**: A Gymnasium-compliant PPO/DQN agent that learns to prioritize the search queue dynamically over time.
-7. **End-to-End Evaluation Pipeline**: A massive grid-search testbench comparing AI heuristics vs. DFS/BFS across benchmark programs.
-8. **Real-Time Dashboard (Visualization)**: A native Streamlit app that visually tracks execution state, coverage growth, and heuristic performance.
-9. **Report & Table Generation (The Paper Builder)**: Automates the transition from raw JSON metrics directly into `booktabs` LaTeX tables and high-DPI Vector PDFs for academic publication.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.11+-blue.svg" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-Backend-green" alt="FastAPI">
+  <img src="https://img.shields.io/badge/PyTorch-Deep%20Learning-red" alt="PyTorch">
+  <img src="https://img.shields.io/badge/LLVM-Compiler-orange" alt="LLVM">
+  <img src="https://img.shields.io/badge/KLEE-Symbolic%20Execution-purple" alt="KLEE">
+  <img src="https://img.shields.io/badge/License-MIT-blue" alt="License">
+</p>
 
 ---
 
-## Getting Started
+## Overview
 
-### 1. Installation
+Adaptive Symbolic Execution is a research-oriented framework that enhances symbolic execution through AI-driven search heuristics. Instead of relying on traditional static exploration strategies such as Depth-First Search (DFS), Breadth-First Search (BFS), or Random Path Selection, the framework learns how to prioritize symbolic execution states using Machine Learning, Large Language Models (LLMs), and Reinforcement Learning.
 
-Clone the repository and install the data science and ML dependencies:
+The framework extends the KLEE symbolic execution engine and aims to maximize branch coverage while reducing redundant path exploration, constraint solving overhead, and execution time.
+
+This project combines modern Software Engineering research with Artificial Intelligence and is designed for experimentation, reproducibility, and future academic publication.
+
+---
+
+# Motivation
+
+Symbolic execution is one of the most powerful techniques for automated software testing.
+
+Unfortunately, it suffers from one fundamental problem:
+
+> **Path Explosion**
+
+Large programs generate millions of execution paths, making exhaustive exploration computationally infeasible.
+
+Traditional symbolic execution engines use handcrafted search heuristics that perform well only for certain programs.
+
+This project investigates whether AI can automatically learn better exploration strategies.
+
+---
+
+# Research Objectives
+
+The framework addresses several research questions:
+
+- Can Machine Learning improve symbolic execution search heuristics?
+- Can Large Language Models understand program semantics to guide exploration?
+- Can Reinforcement Learning continuously adapt exploration strategies?
+- Can AI maximize branch coverage while reducing execution cost?
+
+---
+
+# Key Features
+
+- KLEE Integration
+- LLVM Bitcode Support
+- Automated Feature Extraction
+- Machine Learning-based State Ranking
+- Reinforcement Learning Search Policies
+- LLM-assisted Program Analysis
+- Branch Coverage Optimization
+- Interactive Experiment Dashboard
+- Statistical Evaluation
+- Docker-based Reproducible Environment
+- Publication-ready Results
+
+---
+
+# Architecture
+
+```text
+C Program
+      │
+      ▼
+LLVM Bitcode
+      │
+      ▼
+KLEE Symbolic Execution
+      │
+      ▼
+Execution States
+      │
+      ▼
+Feature Extraction
+      │
+      ├───────────────┐
+      ▼               ▼
+Machine Learning   LLM Analysis
+      │               │
+      └──────┬────────┘
+             ▼
+ Reinforcement Learning
+             ▼
+ Priority Ranking
+             ▼
+ Next State Selection
+             ▼
+ Improved Branch Coverage
+```
+
+---
+
+# Repository Structure
+
+```text
+Adaptive-Symbolic-Execution/
+├── backend/                   # KLEE Harness & Core Pydantic Schemas
+│   ├── api/
+│   ├── core/
+│   └── services/
+├── klee/                      # Core symbolic engine configurations
+├── llvm/                      # LLVM IR extractors
+├── feature_extractor/         # AST and Execution Depth Extractors
+├── models/                    # ML and RL Architectures
+│   ├── ml/
+│   └── rl/
+├── reinforcement_learning/    # PPO/DQN agents and environments
+├── llm/                       # Prompt strategies and context handlers
+├── dashboard/                 # Streamlit Real-Time Visualizer
+├── evaluation/                # Benchmark Orchestrator & Stats Engine
+├── experiments/               # Saved benchmark runs
+├── dataset/                   # Coreutils and testing bitcode
+├── visualization/             # Plotting utilities
+├── docs/                      # Phase-by-Phase Developer Notes
+├── tests/                     # Pytest suite validating all modules
+├── Docker/                    # Docker containerization orchestrators
+├── configs/                   # Hyperparameters
+├── paper/                     # Generated LaTeX tables and PDF plots
+└── scripts/                   # CLI Entry points
+```
+
+---
+
+# Project Pipeline
+
+### Phase 1: Environment Setup
+- Python
+- LLVM
+- KLEE
+- Docker
+
+---
+
+### Phase 2: Run Symbolic Execution
+- Compile C programs
+- Generate LLVM bitcode
+- Execute KLEE
+- Collect execution states
+
+---
+
+### Phase 3: Feature Extraction
+Extract execution-state features such as:
+- Execution Depth
+- Path Constraints
+- Solver Time
+- Branch Count
+- Loop Depth
+- Coverage
+- Memory Objects
+- State Age
+- Instruction Count
+
+---
+
+### Phase 4: Machine Learning
+Train multiple ranking models:
+- Random Forest
+- XGBoost
+- LightGBM
+- Neural Networks
+
+The models predict which symbolic execution state should be explored next.
+
+---
+
+### Phase 5: Large Language Models
+LLMs analyze source code to estimate which execution branches are likely to expose previously unexplored program behavior.
+Supported models include:
+- Llama
+- DeepSeek
+- CodeLlama
+- Qwen
+
+---
+
+### Phase 6: Reinforcement Learning
+The RL agent continuously improves symbolic execution.
+
+Algorithms:
+- DQN
+- PPO
+
+Rewards:
+- Increased Branch Coverage
+- Faster Exploration
+- Reduced Solver Calls
+
+---
+
+### Phase 7: Evaluation
+Compare against classical search heuristics:
+- DFS
+- BFS
+- Random Search
+- Coverage Optimized Search
+- Random Path
+- NURS
+
+Metrics:
+- Branch Coverage
+- Instruction Coverage
+- Solver Calls
+- Execution Time
+- Memory Usage
+- Path Diversity
+
+**Branch Coverage Velocity:**
+*(The AI-guided meta-heuristic achieves faster code coverage convergence compared to traditional strategies).*
+![Coverage Over Time](paper/figures/coverage_plot.png)
+
+---
+
+### Phase 8: Visualization
+Interactive dashboard provides:
+- Coverage curves
+- State exploration graphs
+- RL training statistics
+- Performance comparison
+- Experiment summaries
+
+**Dashboard Interface:**
+![Dashboard Screenshot](paper/figures/dashboard_screenshot.png)
+
+---
+
+# Installation
 
 ```bash
 git clone https://github.com/adnaan512/Adaptive-Symbolic-Execution.git
@@ -40,72 +241,137 @@ cd Adaptive-Symbolic-Execution
 pip install -r requirements.txt
 ```
 
-*(Note: Executing actual LLVM bitcode requires a Linux environment with KLEE installed. However, the evaluation and metrics pipeline can be run locally on any OS using the built-in mock simulator).*
+---
 
-### 2. Running the Evaluation Pipeline
+# Running Experiments
 
-To run the End-to-End benchmark suite (Phase 7) and simulate the KLEE engine across multiple heuristics:
-
+Execute baseline experiments:
 ```bash
-python scripts/run_experiments.py --programs bitcode/coreutils/ls.bc bitcode/coreutils/cat.bc --heuristics dfs bfs nurs:covnew ai-guided --repetitions 5
+python scripts/run_experiments.py
 ```
-*Outputs are saved to `results/tables/raw_results.json` and `results/tables/metrics_table.csv`.*
 
-### 3. Visualizing Results (Real-Time Dashboard)
+Run symbolic execution:
+```bash
+python klee/run_klee.py
+```
 
-Once you have generated evaluation data, launch the Streamlit dashboard to explore the results interactively:
+Generate evaluation metrics:
+```bash
+python evaluation/runner.py
+```
 
+Launch dashboard:
 ```bash
 streamlit run dashboard/app.py
 ```
-*This opens a local web server (typically `http://localhost:8501`) displaying coverage timelines and heuristic bar charts.*
-
-![Dashboard Screenshot](paper/figures/dashboard_screenshot.png)
-
-### 4. Generating Publication Artifacts
-
-To compile your metrics into publication-ready assets (LaTeX tables and PDF figures):
-
-```bash
-python scripts/generate_paper_artifacts.py
-```
-*Outputs are generated in the `paper/` directory, ready to be imported into your LaTeX manuscript!*
 
 ---
 
-## Evaluation & Metrics
+# Technologies
 
-The framework mathematically tests the following Research Questions (RQs):
-- **RQ1**: Does the AI-Guided heuristic achieve higher branch coverage than DFS/BFS?
-- **RQ2**: Does the AI-Guided heuristic find bugs faster (Execution Time vs. Unique Crashes)?
-- **RQ3**: Are the performance gains statistically significant?
+**Programming:**
+- Python
+- C++
 
-The pipeline automatically calculates the **Mann-Whitney U** test for statistical significance (p < 0.05).
+**Program Analysis:**
+- LLVM
+- KLEE
 
-### Branch Coverage Velocity
+**Artificial Intelligence:**
+- PyTorch
+- Transformers
+- Scikit-Learn
+- XGBoost
 
-![Coverage Over Time](paper/figures/coverage_plot.png)
+**Backend:**
+- FastAPI
 
-*Figure: The AI-guided meta-heuristic achieves faster code coverage convergence compared to traditional DFS/BFS search strategies across the evaluation benchmark.*
+**Visualization:**
+- Plotly
+- Streamlit
+
+**Infrastructure:**
+- Docker
 
 ---
 
-## Repository Layout
+# Expected Outcomes
 
-```text
-├── backend/                   # KLEE Harness & Core Pydantic Schemas
-├── bitcode/                   # Target LLVM .bc files for analysis
-├── configs/                   # Hyperparameter and execution configurations
-├── dashboard/                 # Streamlit Real-Time Visualizer
-├── docs/                      # Phase-by-Phase Developer Notes
-├── evaluation/                # Benchmark Orchestrator & Stats Engine
-├── models/                    # ML (XGBoost) and RL (PyTorch) Architectures
-├── paper/                     # Generated LaTeX tables and PDF plots
-├── reinforcement_learning/    # Gym Environment & RL Trainers
-├── results/                   # Raw JSON traces and CSV aggregates
-├── scripts/                   # CLI Entry points (run_experiments, etc)
-└── tests/                     # Pytest suite validating all modules
+The framework aims to:
+- Improve branch coverage
+- Reduce execution time
+- Reduce path explosion
+- Learn adaptive search heuristics
+- Enable reproducible symbolic execution research
+
+---
+
+# Research Applications
+
+- Automated Software Testing
+- Program Analysis
+- Symbolic Execution
+- Software Reliability
+- AI for Software Engineering
+- Search Heuristics
+- Reinforcement Learning
+- Intelligent Testing Systems
+
+---
+
+# Future Work
+
+- Graph Neural Networks for state ranking
+- Multi-agent symbolic execution
+- Hybrid fuzzing + symbolic execution
+- Online continual learning
+- Multi-objective optimization
+- Automatic heuristic generation
+- Integration with AFL++
+- Distributed symbolic execution
+
+---
+
+# Citation
+
+If you use this project in academic research, please cite:
+
+```bibtex
+@software{AdaptiveSymbolicExecution,
+  title={Adaptive Symbolic Execution},
+  author={Adnan Hassnain},
+  year={2026},
+  url={https://github.com/adnaan512/Adaptive-Symbolic-Execution}
+}
 ```
 
-## License
-This project is open-source under the MIT License.
+---
+
+# License
+
+This project is licensed under the MIT License.
+
+---
+
+# Acknowledgements
+
+This project is inspired by recent advances in symbolic execution, AI-driven software testing, reinforcement learning, and program analysis, with particular influence from research published at ICSE, FSE, ASE, ISSTA, and related Software Engineering conferences.
+
+---
+
+## Author
+
+**Adnan Hassnain**
+
+BS Computer Science — National University of Sciences and Technology (NUST)
+
+**Research Interests:**
+- AI for Software Engineering
+- Symbolic Execution
+- Program Analysis
+- Automated Software Testing
+- Machine Learning
+- Reinforcement Learning
+- Large Language Models
+
+GitHub: [https://github.com/adnaan512](https://github.com/adnaan512)
