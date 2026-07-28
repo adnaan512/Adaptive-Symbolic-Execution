@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  # The Python Backend running FastAPI with the ML/RL models
+  ai-backend:
+    build: .
+    container_name: klee_ai_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/home/klee/project/backend
+      - ./models:/home/klee/project/models
+    command: uvicorn backend.api.main:app --host 0.0.0.0 --port 8000
+
+  # The C++ KLEE execution container that runs bitcode
+  klee-engine:
+    build: .
+    container_name: klee_execution_engine
+    depends_on:
+      - ai-backend
+    environment:
+      - AI_BACKEND_URL=http://ai-backend:8000/api/evaluate_state
+    volumes:
+      - ./bitcode:/home/klee/project/bitcode
+      - ./results:/home/klee/project/results
+    command: /bin/bash -c "echo 'KLEE AI Docker Integration ready.' && sleep infinity"
