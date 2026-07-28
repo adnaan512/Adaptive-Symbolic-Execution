@@ -229,7 +229,13 @@ Interactive dashboard provides:
 - Experiment summaries
 
 **Dashboard Interface:**
-![Dashboard Screenshot](paper/figures/dashboard_screenshot.png)
+![Dashboard Overview](paper/figures/pic1.PNG)
+
+**Heuristic Performance Comparison:**
+![Heuristic Comparison](paper/figures/hueristiccomparison.PNG)
+
+**Live Execution Tree (Mock):**
+![Execution Path](paper/figures/execution%20path.PNG)
 
 ---
 
