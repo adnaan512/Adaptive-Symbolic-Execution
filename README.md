@@ -1,120 +1,103 @@
-# Adaptive LLM-Guided Symbolic Execution using Reinforcement Learning for Branch Coverage Maximization
+# Adaptive LLM-Guided Symbolic Execution 🧠🚀
 
-Research-grade system that replaces KLEE's static search heuristics (DFS, BFS,
-Random, Coverage-Optimized Search, NURS, MD2U, ...) with a learned
-state-selection policy that combines:
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![KLEE](https://img.shields.io/badge/KLEE-Symbolic_Execution-green)](https://klee.github.io/)
 
-- **Symbolic execution** (KLEE / LLVM bitcode)
-- **Feature extraction** over live execution states
-- **LLM semantic analysis** of source code to predict which branches likely
-  expose unexplored behavior
-- **ML ranking models** (Random Forest, XGBoost, LightGBM, NN, optional GNN)
-  that turn features into a priority score
-- **Reinforcement learning** (DQN / PPO) that learns a state-selection policy
-  whose reward is the marginal increase in branch coverage
+> **A cutting-edge research framework for maximizing branch coverage in Symbolic Execution using Large Language Models (LLMs), Reinforcement Learning (RL), and traditional Machine Learning.**
 
-This repository is being built **in phases** (see `docs/ROADMAP.md`). Each
-phase is independently testable, documented, and reviewed before moving to
-the next, per standard research-software-engineering practice.
+Traditional symbolic execution engines (like KLEE) rely on static search heuristics (DFS, BFS, Random). This project introduces an adaptive, AI-guided meta-heuristic that dynamically learns which execution paths to explore next, prioritizing those most likely to yield new coverage or discover unique crashes.
 
-## Research Questions
+This framework is built as a complete End-to-End Pipeline, ready for publication at top-tier software engineering conferences (ICSE, FSE, ASE, ISSTA).
 
-- **RQ1** — Can AI-guided search improve branch coverage vs. traditional KLEE
-  heuristics?
-- **RQ2** — Can LLMs understand program semantics well enough to guide
-  symbolic execution?
-- **RQ3** — Can reinforcement learning continuously improve state-selection
-  policies over time?
+---
 
-## Architecture
+## 🎯 Project Phases & Architecture
 
-```
-C Program
-   │
-   ▼
-LLVM Bitcode  ──────────────┐
-   │                        │
-   ▼                        │
-KLEE Symbolic Execution     │  (klee/)
-   │                        │
-   ▼                        │
-Execution States            │
-   │                        │
-   ▼                        │
-Feature Extraction ─────────┘  (feature_extractor/)
-   │
-   ▼
-LLM Semantic Analyzer            (llm/)
-   │
-   ▼
-ML Ranking Model                 (models/ml/)
-   │
-   ▼
-RL Agent (DQN / PPO)              (reinforcement_learning/)
-   │
-   ▼
-Priority Score → Best Execution State
-   │
-   ▼
-Continue Symbolic Execution → Measure Branch Coverage
-```
+This repository is modularly structured across 9 distinct phases:
 
-## Repository layout
+1. **GitHub Repository & Structure**: Foundational directory layout (`backend/`, `models/`, `evaluation/`).
+2. **KLEE Integration Harness**: Interacts with the KLEE C++ engine, orchestrating `.bc` (LLVM bitcode) files and generating execution traces.
+3. **Execution State Feature Extraction**: Extracts robust AST, Call Graph, and execution metrics into strongly-typed Pydantic schemas.
+4. **Machine Learning Ranking Models**: Offline XGBoost/RandomForest models that predict the coverage utility of a given state.
+5. **LLM Prompt Strategy Module**: Zero-shot and Few-shot prompting mechanisms to ask GPT/Claude to semantically predict branch viability.
+6. **Reinforcement Learning Agent**: A Gymnasium-compliant PPO/DQN agent that learns to prioritize the search queue dynamically over time.
+7. **End-to-End Evaluation Pipeline**: A massive grid-search testbench comparing AI heuristics vs. DFS/BFS across benchmark programs.
+8. **Real-Time Dashboard (Visualization)**: A native Streamlit app that visually tracks execution state, coverage growth, and heuristic performance.
+9. **Report & Table Generation (The Paper Builder)**: Automates the transition from raw JSON metrics directly into `booktabs` LaTeX tables and high-DPI Vector PDFs for academic publication.
 
-```
-Adaptive-Symbolic-Execution/
-├── backend/                # FastAPI service: orchestrates KLEE runs, serves the dashboard API
-│   ├── api/                 # HTTP routes
-│   ├── core/                 # config, logging, orchestration engine
-│   └── services/              # glue services (klee runner, dataset manager, ...)
-├── frontend/                # React dashboard (coverage, state tree, RL learning curve, ...)
-├── klee/                    # KLEE build assets, run wrappers, plugin/patches
-├── llvm/                    # LLVM bitcode compilation helpers
-├── feature_extractor/       # Extracts the 14-feature vector per execution state
-├── llm/                     # Prompting + parsing layer for the LLM semantic analyzer
-├── models/
-│   ├── ml/                   # Random Forest / XGBoost / LightGBM / NN / GNN rankers
-│   └── rl/                    # DQN / PPO agents, environment wrapper, replay buffer
-├── reinforcement_learning/  # Training loops, reward shaping, RL experiment configs
-├── dataset/                 # Benchmark corpora (Coreutils, BusyBox, SV-COMP, Juliet, LLVM test suite)
-├── evaluation/               # Metrics, baselines, statistical significance testing
-├── visualization/            # Plotly dashboard components, static figure generation
-├── experiments/              # Experiment configs + run manifests (reproducibility)
-├── results/                  # Generated tables/figures/logs (git-ignored except .gitkeep)
-├── docs/                     # Roadmap, design decisions, installation guide
-├── tests/                    # Unit + integration tests (pytest)
-├── Docker/                   # Dockerfiles + docker-compose for reproducible builds
-├── configs/                  # YAML configuration files (per-module, per-experiment)
-└── scripts/                  # One-off / setup shell scripts
-```
+---
 
-## Status
+## 🚀 Getting Started
 
-**Phase 1 — Environment setup & repository structure: in progress (this
-commit).** See `docs/ROADMAP.md` for the full phase plan and
-`docs/PHASE1_NOTES.md` for what has been verified so far and what still needs
-to run in an environment with a real LLVM/KLEE toolchain (this sandbox has
-restricted network egress and no GPU, so heavy builds are staged as
-Dockerfiles/scripts rather than executed here — see notes for details).
+### 1. Installation
 
-## Quick start (once Phase 1 environment is built)
+Clone the repository and install the data science and ML dependencies:
 
 ```bash
-# Build the KLEE + LLVM toolchain image
-docker compose -f Docker/docker-compose.yml build klee-env
-
-# Install the Python side (host or dev container)
-python -m venv .venv && source .venv/bin/activate
+git clone https://github.com/adnaan512/Adaptive-Symbolic-Execution.git
+cd Adaptive-Symbolic-Execution
 pip install -r requirements.txt
-pip install -r requirements-dev.txt
-
-# Sanity-check the toolchain
-docker compose -f Docker/docker-compose.yml run --rm klee-env klee --version
-
-# Run the test suite
-pytest -q
 ```
 
-## License
+*(Note: Executing actual LLVM bitcode requires a Linux environment with KLEE installed. However, the evaluation and metrics pipeline can be run locally on any OS using the built-in mock simulator).*
 
-MIT (see `LICENSE`).
+### 2. Running the Evaluation Pipeline
+
+To run the End-to-End benchmark suite (Phase 7) and simulate the KLEE engine across multiple heuristics:
+
+```bash
+python scripts/run_experiments.py --programs bitcode/coreutils/ls.bc bitcode/coreutils/cat.bc --heuristics dfs bfs nurs:covnew ai-guided --repetitions 5
+```
+*Outputs are saved to `results/tables/raw_results.json` and `results/tables/metrics_table.csv`.*
+
+### 3. Visualizing Results (Real-Time Dashboard)
+
+Once you have generated evaluation data, launch the Streamlit dashboard to explore the results interactively:
+
+```bash
+streamlit run dashboard/app.py
+```
+*This opens a local web server (typically `http://localhost:8501`) displaying coverage timelines and heuristic bar charts.*
+
+### 4. Generating Publication Artifacts
+
+To compile your metrics into publication-ready assets (LaTeX tables and PDF figures):
+
+```bash
+python scripts/generate_paper_artifacts.py
+```
+*Outputs are generated in the `paper/` directory, ready to be imported into your LaTeX manuscript!*
+
+---
+
+## 📊 Evaluation & Metrics
+
+The framework mathematically tests the following Research Questions (RQs):
+- **RQ1**: Does the AI-Guided heuristic achieve higher branch coverage than DFS/BFS?
+- **RQ2**: Does the AI-Guided heuristic find bugs faster (Execution Time vs. Unique Crashes)?
+- **RQ3**: Are the performance gains statistically significant?
+
+The pipeline automatically calculates the **Mann-Whitney U** test for statistical significance (p < 0.05).
+
+---
+
+## 📂 Repository Layout
+
+```text
+├── backend/                   # KLEE Harness & Core Pydantic Schemas
+├── bitcode/                   # Target LLVM .bc files for analysis
+├── configs/                   # Hyperparameter and execution configurations
+├── dashboard/                 # Streamlit Real-Time Visualizer
+├── docs/                      # Phase-by-Phase Developer Notes
+├── evaluation/                # Benchmark Orchestrator & Stats Engine
+├── models/                    # ML (XGBoost) and RL (PyTorch) Architectures
+├── paper/                     # Generated LaTeX tables and PDF plots
+├── reinforcement_learning/    # Gym Environment & RL Trainers
+├── results/                   # Raw JSON traces and CSV aggregates
+├── scripts/                   # CLI Entry points (run_experiments, etc)
+└── tests/                     # Pytest suite validating all modules
+```
+
+## 📜 License
+This project is open-source under the MIT License.
