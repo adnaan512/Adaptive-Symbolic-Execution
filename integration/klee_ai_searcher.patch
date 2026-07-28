@@ -1,0 +1,111 @@
+--- lib/Core/Searcher.cpp	2023-10-01 12:00:00.000000000 +0000
++++ lib/Core/Searcher.cpp	2023-10-01 12:00:00.000000000 +0000
+@@ -21,6 +21,12 @@
+ #include "llvm/Support/CommandLine.h"
+ #include "llvm/Support/raw_ostream.h"
+ 
++// --- AI Guided Searcher Inclusions ---
++#include <curl/curl.h>
++#include <string>
++#include <iostream>
++// -------------------------------------
++
+ using namespace klee;
+ using namespace llvm;
+ 
+@@ -342,6 +348,74 @@
+   states.erase(it);
+ }
+ 
++// =========================================================================
++// AISearcher Implementation
++// =========================================================================
++
++size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userp) {
++    userp->append((char*)contents, size * nmemb);
++    return size * nmemb;
++}
++
++AISearcher::AISearcher() {
++    curl_global_init(CURL_GLOBAL_ALL);
++}
++
++AISearcher::~AISearcher() {
++    curl_global_cleanup();
++}
++
++ExecutionState &AISearcher::selectState() {
++    if (states.empty()) {
++        assert(0 && "No states available to select!");
++    }
++    
++    // If only one state, just return it.
++    if (states.size() == 1) {
++        return **states.begin();
++    }
++
++    // Serialize current states into JSON payload for the Python FastAPI
++    std::string json_payload = "{\"active_states\": [";
++    bool first = true;
++    for (auto const& state : states) {
++        if (!first) json_payload += ", ";
++        json_payload += "{\"state_id\": " + std::to_string(state->id) + ", ";
++        json_payload += "\"instruction_depth\": " + std::to_string(state->depth) + ", ";
++        json_payload += "\"query_cost\": " + std::to_string(state->queryCost) + ", ";
++        json_payload += "\"call_stack_depth\": " + std::to_string(state->stack.size()) + "}";
++        first = false;
++    }
++    json_payload += "]}";
++
++    // Make HTTP POST request to Python AI Backend
++    CURL* curl = curl_easy_init();
++    std::string readBuffer;
++    int selected_id = -1;
++
++    if(curl) {
++        struct curl_slist* headers = NULL;
++        headers = curl_slist_append(headers, "Content-Type: application/json");
++        
++        curl_easy_setopt(curl, CURLOPT_URL, "http://host.docker.internal:8000/api/evaluate_state");
++        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
++        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_payload.c_str());
++        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
++        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
++        
++        CURLcode res = curl_easy_perform(curl);
++        
++        // Very simplistic JSON extraction for demo (production uses a JSON library)
++        if(res == CURLE_OK) {
++            std::string key = "\"selected_state_id\":";
++            size_t pos = readBuffer.find(key);
++            if (pos != std::string::npos) {
++                selected_id = std::stoi(readBuffer.substr(pos + key.length()));
++            }
++        }
++        curl_slist_free_all(headers);
++        curl_easy_cleanup(curl);
++    }
++
++    // Find the state that matches the AI's selection
++    if (selected_id != -1) {
++        for (auto const& state : states) {
++            if (state->id == selected_id) return *state;
++        }
++    }
++    
++    // Fallback to random if network fails
++    return **states.begin();
++}
++
++void AISearcher::update(ExecutionState *current,
++                        const std::vector<ExecutionState *> &addedStates,
++                        const std::vector<ExecutionState *> &removedStates) {
++    states.insert(addedStates.begin(), addedStates.end());
++    for (auto state : removedStates) {
++        states.erase(state);
++    }
++}
++
++bool AISearcher::empty() {
++    return states.empty();
++}
