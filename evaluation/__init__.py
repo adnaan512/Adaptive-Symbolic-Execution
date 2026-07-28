@@ -15,3 +15,10 @@ Planned public interface:
 Outputs are written to `results/tables/` in a format `docs/` and the
 paper-report generator (Phase 9) can consume directly (CSV + LaTeX booktabs).
 """
+
+from evaluation.runner import run_benchmark_suite
+
+__all__ = [
+    "run_benchmark_suite",
+]
+
