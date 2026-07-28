@@ -67,35 +67,7 @@ The framework addresses several research questions:
 
 # Architecture
 
-```text
-C Program
-      │
-      ▼
-LLVM Bitcode
-      │
-      ▼
-KLEE Symbolic Execution
-      │
-      ▼
-Execution States
-      │
-      ▼
-Feature Extraction
-      │
-      ├───────────────┐
-      ▼               ▼
-Machine Learning   LLM Analysis
-      │               │
-      └──────┬────────┘
-             ▼
- Reinforcement Learning
-             ▼
- Priority Ranking
-             ▼
- Next State Selection
-             ▼
- Improved Branch Coverage
-```
+![Architecture Diagram](paper/figures/architecture.png)
 
 ---
 
