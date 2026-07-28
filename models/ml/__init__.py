@@ -24,10 +24,12 @@ see `docs/design/label_construction.md` (added in Phase 4).
 
 from models.ml.base import RankingModel
 from models.ml.tree_models import RandomForestRanker, XGBoostRanker, LightGBMRanker
+from models.ml.nn_model import NeuralNetRanker
 
 __all__ = [
     "RankingModel",
     "RandomForestRanker",
     "XGBoostRanker",
     "LightGBMRanker",
+    "NeuralNetRanker",
 ]
