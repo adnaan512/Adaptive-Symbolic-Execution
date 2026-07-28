@@ -60,6 +60,8 @@ streamlit run dashboard/app.py
 ```
 *This opens a local web server (typically `http://localhost:8501`) displaying coverage timelines and heuristic bar charts.*
 
+![Dashboard Screenshot](paper/figures/dashboard_screenshot.png)
+
 ### 4. Generating Publication Artifacts
 
 To compile your metrics into publication-ready assets (LaTeX tables and PDF figures):
