@@ -7,7 +7,9 @@ import json
 import logging
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -81,9 +83,67 @@ def generate_latex_tables():
         logger.info(f"Generated LaTeX table: {sig_out_path}")
 
 
+def generate_pdf_figures():
+    """Reads raw JSON snapshots and generates high-DPI matplotlib/seaborn vector PDFs."""
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    
+    if not RAW_JSON.exists():
+        logger.error(f"Raw JSON not found at {RAW_JSON}")
+        return
+        
+    with open(RAW_JSON, "r") as f:
+        raw_results = json.load(f)
+        
+    if not raw_results:
+        return
+        
+    records = []
+    for run in raw_results:
+        heuristic = run.get("heuristic")
+        for snapshot in run.get("coverage_over_time", []):
+            records.append({
+                "heuristic": heuristic,
+                "time_s": snapshot.get("elapsed_seconds"),
+                "branch_coverage": snapshot.get("branch_coverage")
+            })
+            
+    df = pd.DataFrame(records)
+    if df.empty:
+        logger.warning("No snapshot data available for plotting.")
+        return
+        
+    df['time_bin'] = df['time_s'].round()
+    agg_df = df.groupby(['heuristic', 'time_bin'])['branch_coverage'].mean().reset_index()
+    
+    # Configure Seaborn style for academic papers
+    sns.set_theme(style="whitegrid", context="paper")
+    plt.figure(figsize=(6, 4))
+    
+    ax = sns.lineplot(
+        data=agg_df, 
+        x="time_bin", 
+        y="branch_coverage", 
+        hue="heuristic",
+        marker="o",
+        linewidth=2
+    )
+    
+    ax.set_title("Average Branch Coverage Over Time", fontsize=12, fontweight="bold")
+    ax.set_xlabel("Elapsed Time (s)", fontsize=10)
+    ax.set_ylabel("Branch Coverage", fontsize=10)
+    
+    plt.tight_layout()
+    
+    # Save as PDF
+    out_path = FIGURES_DIR / "coverage_plot.pdf"
+    plt.savefig(out_path, format="pdf", dpi=300, bbox_inches="tight")
+    logger.info(f"Generated PDF figure: {out_path}")
+
+
 def main():
     logger.info("Generating Paper Artifacts...")
     generate_latex_tables()
+    generate_pdf_figures()
     logger.info("Finished.")
 
 
