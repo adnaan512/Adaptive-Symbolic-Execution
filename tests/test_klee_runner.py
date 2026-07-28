@@ -37,7 +37,7 @@ def bitcode(tmp_path) -> Path:
 
 def _mock_popen(returncode: int = 0) -> MagicMock:
     """Return a mock Popen that immediately appears finished."""
-    proc = MagicMock(spec=subprocess.Popen)
+    proc = MagicMock()
     proc.pid = 12345
     proc.returncode = returncode
     proc.poll.return_value = returncode        # appears finished

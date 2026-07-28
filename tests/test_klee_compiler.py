@@ -36,17 +36,18 @@ def c_source(tmp_path) -> Path:
 
 def _mock_success(bc_path: Path):
     """Return a mock subprocess.CompletedProcess that mimics a successful clang run."""
-    result = MagicMock(spec=subprocess.CompletedProcess)
+    result = MagicMock()
     result.returncode = 0
     result.stderr = ""
     result.stdout = ""
     # Simulate clang creating the output file
+    bc_path.parent.mkdir(parents=True, exist_ok=True)
     bc_path.touch()
     return result
 
 
 def _mock_failure(stderr: str = "clang: error: some error", returncode: int = 1):
-    result = MagicMock(spec=subprocess.CompletedProcess)
+    result = MagicMock()
     result.returncode = returncode
     result.stderr = stderr
     result.stdout = ""

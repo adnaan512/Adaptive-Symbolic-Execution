@@ -52,6 +52,8 @@ def _make_run_stats_db(directory: Path, rows: list[dict]) -> Path:
     conn = sqlite3.connect(str(db_path))
     # Build columns from the union of all row keys
     all_keys = list(dict.fromkeys(k for row in rows for k in row))
+    if not all_keys:
+        all_keys = ["WallTime", "NumStates", "NumQueries", "QueryTime", "MallocUsage", "FullBranches", "PartialBranches"]
     cols = ", ".join(f"{k} REAL" for k in all_keys)
     conn.execute(f"CREATE TABLE stats ({cols})")
     for row in rows:

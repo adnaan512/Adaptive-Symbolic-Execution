@@ -139,7 +139,7 @@ def resolve_run_dir(run_dir: Path) -> Path:
     as-is; otherwise the newest ``klee-out-*`` child is returned.
     """
     run_dir = Path(run_dir).resolve()
-    if (run_dir / "run.stats").exists():
+    if (run_dir / "run.stats").exists() or run_dir.name.startswith("klee-out-"):
         return run_dir
     return _latest_klee_out(run_dir)
 
