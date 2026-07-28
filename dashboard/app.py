@@ -18,7 +18,6 @@ from components.charts import (
 # Configure the page layout
 st.set_page_config(
     page_title="Adaptive SE Dashboard",
-    page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -50,7 +49,7 @@ def load_significance_csv():
 
 
 def main():
-    st.sidebar.title("🧠 Adaptive SE Pipeline")
+    st.sidebar.title("Adaptive SE Pipeline")
     st.sidebar.markdown(
         "Welcome to the **Adaptive LLM-Guided Symbolic Execution** Dashboard."
     )
@@ -63,7 +62,7 @@ def main():
     sig_df = load_significance_csv()
     
     if metrics_df.empty or not raw_data:
-        st.warning("⚠️ No evaluation data found. Please run `python scripts/run_experiments.py` first.")
+        st.warning("No evaluation data found. Please run `python scripts/run_experiments.py` first.")
         st.stop()
         
     st.markdown("### Aggregated Benchmarks")

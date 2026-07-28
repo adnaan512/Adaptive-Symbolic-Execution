@@ -1,4 +1,4 @@
-# Adaptive LLM-Guided Symbolic Execution 🧠🚀
+# Adaptive LLM-Guided Symbolic Execution
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -12,7 +12,7 @@ This framework is built as a complete End-to-End Pipeline, ready for publication
 
 ---
 
-## 🎯 Project Phases & Architecture
+## Project Phases & Architecture
 
 This repository is modularly structured across 9 distinct phases:
 
@@ -28,7 +28,7 @@ This repository is modularly structured across 9 distinct phases:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Installation
 
@@ -71,7 +71,7 @@ python scripts/generate_paper_artifacts.py
 
 ---
 
-## 📊 Evaluation & Metrics
+## Evaluation & Metrics
 
 The framework mathematically tests the following Research Questions (RQs):
 - **RQ1**: Does the AI-Guided heuristic achieve higher branch coverage than DFS/BFS?
@@ -88,7 +88,7 @@ The pipeline automatically calculates the **Mann-Whitney U** test for statistica
 
 ---
 
-## 📂 Repository Layout
+## Repository Layout
 
 ```text
 ├── backend/                   # KLEE Harness & Core Pydantic Schemas
@@ -105,5 +105,5 @@ The pipeline automatically calculates the **Mann-Whitney U** test for statistica
 └── tests/                     # Pytest suite validating all modules
 ```
 
-## 📜 License
+## License
 This project is open-source under the MIT License.

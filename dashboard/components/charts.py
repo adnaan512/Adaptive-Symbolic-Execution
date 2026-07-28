@@ -16,7 +16,7 @@ def render_coverage_over_time(raw_results: List[Dict[str, Any]]):
     Renders a line chart showing Branch Coverage over Time.
     Compares the average coverage curve of each heuristic across all programs.
     """
-    st.subheader("📈 Branch Coverage Over Time")
+    st.subheader("Branch Coverage Over Time")
     
     if not raw_results:
         st.info("No raw data available for coverage chart.")
@@ -64,7 +64,7 @@ def render_heuristic_comparison(metrics_df: pd.DataFrame):
     """
     Renders a grouped bar chart comparing AI vs Baselines for key metrics.
     """
-    st.subheader("📊 Heuristic Comparison")
+    st.subheader("Heuristic Comparison")
     
     if metrics_df.empty:
         st.info("No metrics data available.")
@@ -103,7 +103,7 @@ def render_live_execution_tree_mock():
     Renders a mocked active execution tree using Plotly.
     Represents the live state space being explored.
     """
-    st.subheader("🌳 Live Execution Tree (Mock)")
+    st.subheader("Live Execution Tree (Mock)")
     
     # A simple tree visualization using Plotly Graph Objects
     # Node positions
