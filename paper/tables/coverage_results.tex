@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\caption{Comparison of AI-Guided Search vs Baseline Heuristics}
+\label{tab:coverage_results}
+\begin{tabular}{llccc}
+\toprule
+Program & Heuristic & Branch Coverage & Exec Time (s) & Unique Bugs \\
+\midrule
+cat & ai-guided & 0.82 \pm 0.03 & 28.0 \pm 4.5 & 2.2 \\
+cat & bfs & 0.51 \pm 0.09 & 31.3 \pm 10.8 & 1.2 \\
+cat & dfs & 0.58 \pm 0.07 & 29.5 \pm 17.4 & 1.2 \\
+cat & nurs:covnew & 0.54 \pm 0.05 & 32.6 \pm 14.2 & 0.2 \\
+ls & ai-guided & 0.82 \pm 0.03 & 28.0 \pm 4.5 & 2.2 \\
+ls & bfs & 0.51 \pm 0.09 & 31.3 \pm 10.8 & 1.2 \\
+ls & dfs & 0.58 \pm 0.07 & 29.5 \pm 17.4 & 1.2 \\
+ls & nurs:covnew & 0.54 \pm 0.05 & 32.6 \pm 14.2 & 0.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
