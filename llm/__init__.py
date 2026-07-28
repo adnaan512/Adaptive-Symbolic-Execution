@@ -22,9 +22,11 @@ Design notes:
 """
 
 from llm.exceptions import LLMError, LLMConnectionError, LLMResponseParseError
+from llm.analyzer import LLMSemanticAnalyzer
 
 __all__ = [
     "LLMError",
     "LLMConnectionError",
     "LLMResponseParseError",
+    "LLMSemanticAnalyzer",
 ]
